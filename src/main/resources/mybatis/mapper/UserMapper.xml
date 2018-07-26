@@ -10,7 +10,7 @@
 		id,userName,password,phone
 	</sql>
 
-	<insert id="insert" parameterType="com.example.demo.entity.User">
+	<insert id="insert" parameterType="com.ictframe.data.entity.User">
 		INSERT INTO
 		<include refid="BASE_TABLE" />
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -28,7 +28,7 @@
 	</insert>
 
 	<select id="selectUsers"
-		resultType="com.example.demo.entity.User">
+		resultType="com.ictframe.data.entity.User">
 		SELECT
 		<include refid="BASE_COLUMN" />
 		FROM

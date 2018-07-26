@@ -1,6 +1,7 @@
 package com.ictframe.data.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -36,7 +37,8 @@ public class User implements Serializable{
     private String password;
     private String salt;//加密密码的盐
     private byte state;//用户状态,0:创建未认证（比如没有激活，没有输入验证码等等）--等待验证的用户 , 1:正常状态,2：用户被锁定.
-
+    private Boolean isexpired = Boolean.TRUE;//默认过期状态，刚创建用户需要先激活再使用
+    private Date createdate;
     private String phone;
     @ManyToMany(fetch = FetchType.EAGER)//立即加载该用户所拥有的角色
     @JoinTable(name = "t_user_role",joinColumns = {@JoinColumn(name ="user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
@@ -105,6 +107,24 @@ public class User implements Serializable{
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
-    
-    
+
+	public Boolean getIsexpired() {
+		return isexpired;
+	}
+
+	public void setIsexpired(Boolean isexpired) {
+		this.isexpired = isexpired;
+	}
+
+	public Date getCreatedate() {
+		return createdate;
+	}
+
+	public void setCreatedate(Date createdate) {
+		this.createdate = createdate;
+	}
+
+	public String getCeradisalt() {
+		return this.username+this.salt;
+	}
 }

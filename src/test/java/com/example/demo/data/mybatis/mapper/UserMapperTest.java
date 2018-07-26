@@ -70,7 +70,8 @@ public class UserMapperTest {
 		String username = "jerry";
 		logger.debug("先根据username={}查找User",username);
 		User user = userRep.findByUsername(username);
-		logger.debug("根据userid={}查找{}所拥有的角色",user.getId(),user.getUsername());
+		logger.debug("根据userid={}查找{}所拥有的角色,用户状态state：{},用户isexpired={},用户创建时间：{}",
+				user.getId(),user.getUsername(), user.getState(), user.getIsexpired(), user.getCreatedate());
 		List<Role> roles = user.getRoles();
 		assertThat(roles).hasSize(1);
 		for (Role role : roles) {

@@ -4,18 +4,24 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.mgt.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import com.ictframe.core.cache.shiro.RedisCacheManager;
 import com.ictframe.core.shiro.IctShiroRealm;
 
 @Configuration
@@ -28,31 +34,39 @@ public class ShiroConfiguration {
 		return new LifecycleBeanPostProcessor();
 	}
 
-	// @Bean(name = "hashedCredentialsMatcher")
-	// public HashedCredentialsMatcher hashedCredentialsMatcher() {
-	// HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
-	// credentialsMatcher.setHashAlgorithmName(AuthConstant.hashAlgorithmName);
-	//// credentialsMatcher.setHashIterations(AuthConstant.hashIterations);
-	// credentialsMatcher.setHashIterations(1);
-	//// credentialsMatcher.setStoredCredentialsHexEncoded(AuthConstant.hexEncodedEnabled);默认就是这个
-	// return credentialsMatcher;
-	// }
+//	@Bean(name = "credentialsMatcher")
+//	public CredentialsMatcher credentialsMatcher() {
+//		HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
+//		credentialsMatcher.setHashAlgorithmName(AuthConstant.hashAlgorithmName);
+//		// credentialsMatcher.setHashIterations(AuthConstant.hashIterations);
+//		credentialsMatcher.setHashIterations(1);
+//		// credentialsMatcher.setStoredCredentialsHexEncoded(AuthConstant.hexEncodedEnabled);默认就是这个
+//		return credentialsMatcher;
+//	}
 
+	
+	
 	@Bean(name = "shiroRealm")
 	@DependsOn("lifecycleBeanPostProcessor")
-	public IctShiroRealm ictShiroRealm() {
+	public IctShiroRealm ictShiroRealm(CacheManager shiroRedisCacheManager) {
 		IctShiroRealm ictShiroRealm = new IctShiroRealm();
-//		ictShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+//		ictShiroRealm.setCredentialsMatcher(credentialsMatcher);
+		ictShiroRealm.setCacheManager(shiroRedisCacheManager);
 		return ictShiroRealm;
 	}
 
-	@Bean(name = "ehCacheManager")
-	@DependsOn("lifecycleBeanPostProcessor")
-	public EhCacheManager ehCacheManager() {
-		EhCacheManager ehCacheManager = new EhCacheManager();
-		return ehCacheManager;
-	}
+//	@Bean(name = "ehCacheManager")
+//	@DependsOn("lifecycleBeanPostProcessor")
+//	public EhCacheManager ehCacheManager() {
+//		EhCacheManager ehCacheManager = new EhCacheManager();
+//		return ehCacheManager;
+//	}
 
+	@Bean(name = "shiroRedisCacheManager")
+	@DependsOn("lifecycleBeanPostProcessor")
+	public CacheManager shiroRedisCacheManager(RedisTemplate<?, ?> redisTemplate) {
+		return new RedisCacheManager(redisTemplate);
+	}
 	/**
 	 * 凭证匹配器
 	 * （由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理了
@@ -75,13 +89,15 @@ public class ShiroConfiguration {
 	 * @return
 	 */
 	@Bean(name = "securityManager")
-	public DefaultWebSecurityManager securityManager() {
+	public SecurityManager securityManager(CacheManager shiroRedisCacheManager, IctShiroRealm shiroRealm) {
 		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
 		// 看了源码 默认就是这个 没必要在此构建了
 		// SessionManager sessionManager = new DefaultWebSessionManager();
 		// securityManager.setSessionManager(sessionManager);
-		securityManager.setRealm(ictShiroRealm());
-		securityManager.setCacheManager(ehCacheManager());
+		securityManager.setRealm(shiroRealm);
+		securityManager.setCacheManager(shiroRedisCacheManager);
+		SecurityUtils.setSecurityManager(securityManager);
+		
 		return securityManager;
 	}
 
@@ -95,13 +111,13 @@ public class ShiroConfiguration {
 	 * @return
 	 */
 	@Bean(name = "shiroFilter")
-	public ShiroFilterFactoryBean shiroFilterFactoryBean(DefaultWebSecurityManager securityManager) {
+	public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
 		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
 		shiroFilterFactoryBean.setSecurityManager(securityManager);
 		//配置登陆页面
 		shiroFilterFactoryBean.setLoginUrl("/login");
 		//登陆成功后跳转的页面
-		shiroFilterFactoryBean.setSuccessUrl("/");
+		shiroFilterFactoryBean.setSuccessUrl("/index");
 		//未授权页面
 		shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 		// 配置拦截器
@@ -124,14 +140,6 @@ public class ShiroConfiguration {
 		return shiroFilterFactoryBean;
 	}
 
-//	@Bean
-//	@ConditionalOnMissingBean
-//	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-//		DefaultAdvisorAutoProxyCreator daap = new DefaultAdvisorAutoProxyCreator();
-//		daap.setProxyTargetClass(true);
-//		return daap;
-//	}
-
 	@Bean
 	public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(
 			DefaultWebSecurityManager securityManager) {
@@ -140,11 +148,6 @@ public class ShiroConfiguration {
 		return aasa;
 	}
 
-//	@Bean(name = "shiroDialect")
-//	public ShiroDialect shiroDialect() {
-//		return new ShiroDialect();
-//	}
-	
 	@Bean(name="simpleMappingExceptionResolver")
 	public SimpleMappingExceptionResolver
 	createSimpleMappingExceptionResolver() {

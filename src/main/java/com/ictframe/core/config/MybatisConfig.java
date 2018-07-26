@@ -1,6 +1,5 @@
 package com.ictframe.core.config;
 
-import org.apache.shiro.cache.CacheManager;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;
 

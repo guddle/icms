@@ -1,25 +1,103 @@
-/target/
-!.mvn/wrapper/maven-wrapper.jar
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
+##ignore this file##
+# IDEs and editors
+.idea/
 .project
-.settings
-.springBeans
-.sts4-cache
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.editorconfig
+#Demo file
+demo/
 
-### IntelliJ IDEA ###
-.idea
+##filter databfile、sln file##
+*.mdb
+*.ldb
+*.sln
+
+##class file##
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# compression file
+*.7z
+*.dmg
+*.gz 
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.via
+*.tmp
+*.err
+*.war
+*.ear
+*.bak
+bin/
+node_modules/
+
+# Mac OS generated files #  
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Intellij  
+.idea/
+*.iml 
 *.iws
-*.iml
-*.ipr
 
-### NetBeans ###
-/nbproject/private/
-/build/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Maven  
+log/
+target/
+pom.xml.*
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/
+mvn.*
+# compiled output
+/dist
+/dist-server
+/tmp
+/out-tsc
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# e2e
+e2e/

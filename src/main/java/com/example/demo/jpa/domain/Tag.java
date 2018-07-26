@@ -21,16 +21,15 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
 
 @Entity
 public class Tag {
 
 	@Id
-	@SequenceGenerator(name = "tag_generator", sequenceName = "tag_sequence", initialValue = 4)
-	@GeneratedValue(generator = "tag_generator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	private String name;

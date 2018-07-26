@@ -46,8 +46,10 @@ public interface Constants {
 	static final String REDIS_SHIRO_SESSION = SYSTEM_CACHE_NAMESPACE + "SHIRO-SESSION:";
 	/** CACHE */
 	static final String MYBATIS_CACHE = "D:IctFrame:MYBATIS:";
-	/***/
-	static final String DB_KEY = "90139119";
+	/**加密用的密码（私钥）*/
+	static final String DB_KEY = "admin";
+	/**加密的盐值*/
+	static final String DB_ECRYPT_SALT="19861001";
 
 	/** 日志表状态 */
 	interface JOBSTATE {

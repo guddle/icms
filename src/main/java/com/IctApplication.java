@@ -5,6 +5,8 @@ import javax.jms.Queue;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -18,8 +20,14 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @ComponentScan
-public class IctApplication {
+public class IctApplication extends SpringBootServletInitializer{
 	
+	
+	@Override
+	protected SpringApplicationBuilder createSpringApplicationBuilder() {
+		return super.createSpringApplicationBuilder();
+	}
+
 	@Bean
 	public Queue queue() {
 		return new ActiveMQQueue("sample.queue");

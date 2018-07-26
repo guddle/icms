@@ -44,8 +44,6 @@ import com.example.demo.jpa.domain.Tag;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-@Rollback(false)
-//@ComponentScan("*.service.*")
 public class NoteServiceTest {
 	
 	private static final Logger logger = LoggerFactory
@@ -56,7 +54,7 @@ public class NoteServiceTest {
 	@Autowired
 	TagMapper mapper;
 
-//	@Test
+	@Test
 	public void findsAllNotes() {
 		logger.debug("findsAllNotes start");
 		List<Note> notes = this.noteService.findAll();
@@ -84,6 +82,7 @@ public class NoteServiceTest {
 	public void saveNoteTest() {
 		logger.debug("Save Note...........................");
 		Note note = new Note();
+		note.setId(5);
 		note.setBody("Spring Boot Redis Cache Test");
 		note.setTitle("Redis Cache!");
 		List<Tag> tags = mapper.getAll();

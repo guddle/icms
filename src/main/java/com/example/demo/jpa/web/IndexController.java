@@ -18,6 +18,9 @@ package com.example.demo.jpa.web;
 
 import java.util.List;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.demo.data.jpa.service.NoteServiceImpl;
 import com.example.demo.jpa.domain.Note;
 import com.example.demo.jpa.repository.NoteRepository;
+import com.ictframe.core.util.Encrypt;
 
 @Controller
 public class IndexController {
@@ -45,6 +49,8 @@ public class IndexController {
 	@RequestMapping("/index")
 	@Transactional(readOnly = true)
 	public ModelAndView index() {
+//		Session session = SecurityUtils.getSubject().getSession();
+//		session.
 		List<Note> notes = this.noteRepository.findAll();
 		ModelAndView modelAndView = new ModelAndView("index");
 		modelAndView.addObject("notes", notes);
@@ -58,7 +64,18 @@ public class IndexController {
 		return notes;
 	}
 	@RequestMapping("/login")
-	public String login() {
-		return null;
+	public String login(String username, String password) {
+		try {
+			UsernamePasswordToken token = new UsernamePasswordToken(username, Encrypt.md5(password));
+//			token.setRememberMe(true);
+			SecurityUtils.getSubject().login(token);
+			return "index";
+		}catch (Exception e) {
+			return "login";
+		}
+	}
+	@GetMapping("/403")
+	public String _403(){
+		return "403";
 	}
 }

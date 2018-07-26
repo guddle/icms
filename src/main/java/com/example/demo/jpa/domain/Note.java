@@ -22,9 +22,9 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
 
 @Entity
 public class Note implements Serializable{
@@ -35,8 +35,7 @@ public class Note implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name = "note_generator", sequenceName = "note_sequence", initialValue = 5)
-	@GeneratedValue(generator = "note_generator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	private String title;
